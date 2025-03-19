@@ -8,28 +8,12 @@ function App() {
   const [chatActive, setChatActive] = useState(false);
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // LLM container
   const containerName = "ollama"
   const [command, setCommand] = useState(""); // Store command input
   const [output, setOutput] = useState(""); // Store output
-
-  // Function to send command to backend
-  const exec = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/execute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ containerName, command }),
-      });
-
-      const data = await response.json();
-      setOutput(data.output || "No response received");
-    } catch (error) {
-      console.error("Error executing command:", error);
-      setOutput("Error executing command");
-    }
-  };
 
   // Handle image upload
   const handleImageChange = (e) => {
@@ -55,46 +39,53 @@ function App() {
   };
 
   // Send message to cat
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
     e.preventDefault();
-    if (!userInput.trim()) return;
+    if (!userInput.trim() || isLoading) return; // Prevent multiple submissions
+    
+    // Set loading state to true
+    setIsLoading(true);
     
     // Add user message to chat
-    const newMessages = [...messages, { sender: 'user', text: userInput }];
+    const newUserInput = userInput; // Store current input before clearing
+    const newMessages = [...messages, { sender: 'user', text: newUserInput }];
     setMessages(newMessages);
     setUserInput('');
 
-    // Interact with container
-    const ollamaCommand = `ollama run llama3.2 &&`
-    var prompt = `Context: This is a cat named ${catName}. They have the following traits: ${catTraits}. Generate a response as the cat to the following message: ${userInput}`;
-    setCommand(ollamaCommand + prompt)
-    
-    // Wait for the state to update and then execute
-    setTimeout(() => {
-      exec();
-    }, 500);
-    
-    // Generate cat response based on traits
-    setTimeout(() => {
-      let response = `Meow! `;
-
-      response += output
+    try {
+      // Interact with container
+      const ollamaCommand = `ollama run llama3.2 &&`;
+      const prompt = `Context: This is a cat named ${catName}. They have the following traits: ${catTraits}. Generate a response as the cat to the following message: ${newUserInput}`;
       
-      /*
-      // Default responses if no matching traits
-      if (!response.includes('ball') && !response.includes('treats') && !response.includes('nap')) {
-        const defaultResponses = [
-          'What are you up to?',
-          'Can you pet me?',
-          'I like sitting in boxes!',
-          'Did you hear that noise?'
-        ];
-        response += defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-      }
-      */
+      // Execute command and wait for the result
+      const result = await fetch("http://localhost:5000/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          containerName, 
+          command: ollamaCommand + prompt 
+        }),
+      });
       
-      setMessages([...newMessages, { sender: 'cat', text: response }]);
-    }, 1000);
+      const data = await result.json();
+      const responseText = data.output || "No response received";
+      
+      // Now that we have the output, generate cat response
+      const response = `Meow! ${responseText}`;
+      
+      // Add cat response to messages
+      setMessages(prevMessages => [...prevMessages, { sender: 'cat', text: response }]);
+    } catch (error) {
+      console.error("Error getting cat response:", error);
+      // Show error response
+      setMessages(prevMessages => [...prevMessages, { 
+        sender: 'cat', 
+        text: "Meow? Something went wrong with my cat brain..." 
+      }]);
+    } finally {
+      // Always reset loading state
+      setIsLoading(false);
+    }
   };
 
   // Reset chat and create new cat
@@ -109,7 +100,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Cat Chatbot</h1>
+        <h1>CatBot</h1>
         {chatActive && <button onClick={resetChat} className="reset-button">New Cat</button>}
       </header>
 
@@ -190,8 +181,11 @@ function App() {
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 placeholder="Say something to your cat..."
+                disabled={isLoading}
               />
-              <button type="submit">Send</button>
+              <button type="submit" disabled={isLoading}>
+                {isLoading ? "Waiting..." : "Send"}
+              </button>
             </form>
           </div>
         )}

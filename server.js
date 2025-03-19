@@ -44,24 +44,34 @@ app.post("/execute", async (req, res) => {
         AttachStderr: true,
       });
   
-      // Start execution
+      // Start execution and properly collect all output
       const stream = await exec.start({ hijack: true, stdin: true });
   
       let output = "";
-      stream.on("data", (chunk) => {
-        output += chunk.toString();
+      
+      // Use promises to properly handle stream completion
+      await new Promise((resolve, reject) => {
+        stream.on("data", (chunk) => {
+          output += chunk.toString();
+        });
+    
+        stream.on("end", () => {
+          resolve();
+        });
+        
+        stream.on("error", (err) => {
+          reject(err);
+        });
       });
-  
-      stream.on("end", () => {
-        const cleanOutput = stripAnsi(output);
-        res.json({ output: cleanOutput.trim() });
-      });
+      
+      const cleanOutput = stripAnsi(output);
+      res.json({ output: cleanOutput.trim() });
   
     } catch (err) {
       console.error("Execution error:", err);
       res.status(500).json({ error: err.message });
     }
-  });
+});
   
 // Start the server and listen on port 5000
 const PORT = 5000;
