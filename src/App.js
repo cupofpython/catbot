@@ -10,11 +10,6 @@ function App() {
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // LLM container
-  const containerName = "ollama"
-  const [command, setCommand] = useState(""); // Store command input
-  const [output, setOutput] = useState(""); // Store output
-
   // Handle image upload
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -53,25 +48,23 @@ function App() {
     setUserInput('');
 
     try {
-      // Interact with container
-      const ollamaCommand = `ollama run llama3.2 &&`;
+      // Interact with LLM
+      const model = `llama3.2`;
       const prompt = `Context: This is a cat named ${catName}. They have the following traits: ${catTraits}. Generate a response as the cat to the following message: ${newUserInput}`;
       
       // Execute command and wait for the result
+      // Switch K8s service name to 0.0.0.0 for local testing!
       const result = await fetch("http://0.0.0.0:5001/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          containerName, 
-          command: ollamaCommand + prompt 
+          model,
+          prompt
         }),
       });
       
       const data = await result.json();
-      const responseText = data.output || "No response received";
-      
-      // Now that we have the output, generate cat response
-      const response = `Meow! ${responseText}`;
+      const response = data.response || "No response received";
       
       // Add cat response to messages
       setMessages(prevMessages => [...prevMessages, { sender: 'cat', text: response }]);

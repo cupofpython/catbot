@@ -9,7 +9,6 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
-    image: samanthamorris684/catbot
     depends_on:
       - model
     build:
@@ -24,7 +23,7 @@ services:
       - 11434:11434
     container_name: ollama
     post_start:
-      - command: ollama run llama3.2
+      - command: ollama pull llama3.2
 
 
 # The commented out section below is an example of how to define a PostgreSQL

@@ -31,5 +31,7 @@ spec:
                     - name: NODE_ENV
                       value: "production"
                   ports:
-                    - name: server-3000
+                    - name: app-3000
                       containerPort: 3000
+                    - name: server-5001
+                      containerPort: 5001

@@ -26,11 +26,11 @@ spec:
             containers:
                 - name: ollama
                   image: ollama/ollama:0.6.2
-                  imagePullPolicy: Always
+                  imagePullPolicy: IfNotPresent
                   ports:
                     - name: model-11434
                       containerPort: 11434
                   lifecycle:
                     postStart:
                       exec:
-                        command: ["/bin/sh", "-c", "ollama run llama3.2"]
+                        command: ["/bin/sh", "-c", "ollama pull llama3.2"]

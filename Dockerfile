@@ -34,5 +34,8 @@ COPY . .
 # Expose the port that the application listens on.
 EXPOSE 3000
 
+# To access server.js
+EXPOSE 5001
+
 # Run the application.
 CMD npm start

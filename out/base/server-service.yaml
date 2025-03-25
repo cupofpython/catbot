@@ -13,7 +13,11 @@ spec:
         com.docker.compose.project: cat-chatbot
         com.docker.compose.service: server
     ports:
-        - name: server-3000
+        - name: app-3000
           port: 3000
           protocol: TCP
-          targetPort: server-3000
+          targetPort: app-3000
+        - name: server-5001
+          port: 5001
+          protocol: TCP
+          targetPort: server-5001
