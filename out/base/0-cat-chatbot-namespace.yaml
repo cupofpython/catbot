@@ -1,0 +1,8 @@
+#! 0-cat-chatbot-namespace.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: cat-chatbot
+    labels:
+        com.docker.compose.project: cat-chatbot

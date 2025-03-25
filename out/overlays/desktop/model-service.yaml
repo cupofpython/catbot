@@ -1,0 +1,13 @@
+# check if there is at least one published port
+
+#! model-service.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Service
+metadata:
+    name: model-published
+    namespace: cat-chatbot
+spec:
+    type: LoadBalancer
+
+# check if there is at least one published port

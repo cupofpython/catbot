@@ -1,0 +1,13 @@
+#! kustomization.yaml
+# Generated code, do not edit
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+    - 0-cat-chatbot-namespace.yaml
+    - default-network-policy.yaml
+    - model-deployment.yaml
+    - model-expose.yaml
+    - model-service.yaml
+    - server-deployment.yaml
+    - server-expose.yaml
+    - server-service.yaml

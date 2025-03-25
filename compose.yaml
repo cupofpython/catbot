@@ -9,6 +9,7 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
+    image: samanthamorris684/catbot
     depends_on:
       - model
     build:
@@ -22,8 +23,6 @@ services:
     ports:
       - 11434:11434
     container_name: ollama
-    #stdin_open: true
-    #tty: true
     post_start:
       - command: ollama run llama3.2
 

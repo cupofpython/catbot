@@ -1,0 +1,23 @@
+# check if there is at least one published port
+
+#! model-service.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Service
+metadata:
+    name: model-published
+    namespace: cat-chatbot
+    labels:
+        com.docker.compose.project: cat-chatbot
+        com.docker.compose.service: model
+spec:
+    selector:
+        com.docker.compose.project: cat-chatbot
+        com.docker.compose.service: model
+    ports:
+        - name: model-11434
+          port: 11434
+          protocol: TCP
+          targetPort: model-11434
+
+# check if there is at least one published port

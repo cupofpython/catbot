@@ -1,0 +1,18 @@
+#! model-expose.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Service
+metadata:
+    name: model
+    namespace: cat-chatbot
+    labels:
+        com.docker.compose.project: cat-chatbot
+        com.docker.compose.service: model
+spec:
+    selector:
+        com.docker.compose.project: cat-chatbot
+        com.docker.compose.service: model
+    ports:
+        - name: model-11434
+          port: 11434
+          targetPort: model-11434

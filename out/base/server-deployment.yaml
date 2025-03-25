@@ -1,0 +1,35 @@
+#! server-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: server
+    namespace: cat-chatbot
+    labels:
+        com.docker.compose.project: cat-chatbot
+        com.docker.compose.service: server
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: cat-chatbot
+            com.docker.compose.service: server
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: cat-chatbot
+                com.docker.compose.service: server
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: server
+                  image: samanthamorris684/catbot:latest
+                  imagePullPolicy: Always
+                  env:
+                    - name: NODE_ENV
+                      value: "production"
+                  ports:
+                    - name: server-3000
+                      containerPort: 3000

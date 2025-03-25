@@ -1,0 +1,9 @@
+#! server-service.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Service
+metadata:
+    name: server-published
+    namespace: cat-chatbot
+spec:
+    type: LoadBalancer

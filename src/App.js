@@ -58,7 +58,7 @@ function App() {
       const prompt = `Context: This is a cat named ${catName}. They have the following traits: ${catTraits}. Generate a response as the cat to the following message: ${newUserInput}`;
       
       // Execute command and wait for the result
-      const result = await fetch("http://localhost:5000/execute", {
+      const result = await fetch("http://0.0.0.0:5001/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

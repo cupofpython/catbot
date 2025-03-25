@@ -73,8 +73,8 @@ app.post("/execute", async (req, res) => {
     }
 });
   
-// Start the server and listen on port 5000
-const PORT = 5000;
-app.listen(PORT, () => {
+// Start the server and listen on port 5001
+const PORT = 5001;
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
 });

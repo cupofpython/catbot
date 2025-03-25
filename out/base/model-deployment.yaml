@@ -1,0 +1,36 @@
+#! model-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: model
+    namespace: cat-chatbot
+    labels:
+        com.docker.compose.project: cat-chatbot
+        com.docker.compose.service: model
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: cat-chatbot
+            com.docker.compose.service: model
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: cat-chatbot
+                com.docker.compose.service: model
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: ollama
+                  image: ollama/ollama:0.6.2
+                  imagePullPolicy: Always
+                  ports:
+                    - name: model-11434
+                      containerPort: 11434
+                  lifecycle:
+                    postStart:
+                      exec:
+                        command: ["/bin/sh", "-c", "ollama run llama3.2"]
