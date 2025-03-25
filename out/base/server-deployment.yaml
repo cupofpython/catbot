@@ -9,7 +9,7 @@ metadata:
         com.docker.compose.project: cat-chatbot
         com.docker.compose.service: server
 spec:
-    replicas: 1
+    replicas: 3
     selector:
         matchLabels:
             com.docker.compose.project: cat-chatbot
@@ -35,3 +35,7 @@ spec:
                       containerPort: 3000
                     - name: server-5001
                       containerPort: 5001
+                  resources:
+                    requests:
+                      cpu: "250m"
+                      memory: "1Gi"
