@@ -45,6 +45,6 @@ function getResponse(model, prompt) {
   
 // Start the server and listen on port 5001
 const PORT = 5001;
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
