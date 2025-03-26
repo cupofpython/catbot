@@ -1,8 +1,11 @@
 # CatBot: Talk to your cats.
+<<<<<<< HEAD
 
 
 https://github.com/user-attachments/assets/0124784f-e069-4150-87a3-21c2b76b871d
 
+=======
+>>>>>>> parent of 1a46f45 (add a link to the running site)
 
 ## Summary
 This project is a chatbot that allows you to talk to your cats. :smile:
