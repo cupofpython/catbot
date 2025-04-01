@@ -1,0 +1,13 @@
+name: Create release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update cluster
+        run: helm upgrade --set image.tag=<newtag>
+
