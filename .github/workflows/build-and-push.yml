@@ -2,6 +2,9 @@ name: Build and deploy image
 
 on:
   workflow_call:
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
     inputs:
       IMAGE_TAG:
         required: true

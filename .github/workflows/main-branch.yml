@@ -8,5 +8,7 @@ jobs:
   build-and-push-main:
     uses: ./.github/workflows/build-and-push.yml
     with:
-        IMAGE_TAG: main@$GITHUB_SHA
+      IMAGE_TAG: main@$GITHUB_SHA
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }} 
     
