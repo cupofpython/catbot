@@ -9,7 +9,7 @@ metadata:
         com.docker.compose.project: cat-chatbot
         com.docker.compose.service: model
 spec:
-    replicas: 3
+    replicas: 2
     selector:
         matchLabels:
             com.docker.compose.project: cat-chatbot

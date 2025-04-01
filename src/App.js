@@ -54,7 +54,7 @@ function App() {
       
       // Execute command and wait for the result
       // Switch K8s service name to 0.0.0.0 for local testing!
-      const result = await fetch("http://a4c423481a99842669d9088bba7450ad-1853516926.us-east-2.elb.amazonaws.com:5001/execute", {
+      const result = await fetch("http://localhost:5001/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

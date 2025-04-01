@@ -17,7 +17,7 @@ app.post("/execute", async (req, res) => {
     }
     try {
       const output = await getResponse(model, prompt);
-      res.type('text').send(output);
+      res.type('json').send(output);
     }
     catch (err) {
       console.error("Execution error: ", err);
@@ -28,13 +28,13 @@ app.post("/execute", async (req, res) => {
 function getResponse(model, prompt) {
     //console.log(`${LLM_API_HOST}`)
     // Use K8s service nae, switch back to 0.0.0.0 for local testing (npm start)
-    return axios.post("http://model-published:11434/api/generate", {
+    return axios.post("http://localhost:11434/api/generate", {
         model: model,
         prompt: prompt,
         stream: false
     })
     .then(res => {
-        console.log("Output:" + res.data.response);
+        console.log("Output:" + res.data);
         output = res.data;
         return output;
     })
