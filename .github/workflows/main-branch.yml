@@ -2,7 +2,7 @@ name: Main branch workflow
 
 on:
   push:
-    branches-ignore: [main]
+    branches: [main]
 
 jobs:
   build-and-push-main:
