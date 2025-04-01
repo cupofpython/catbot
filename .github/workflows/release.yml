@@ -1,8 +1,10 @@
 name: Release workflow
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: troubleshoot-eks
+  #release:
+  #  types: [published]
 
 env:
   IMAGE_NAME: samanthamorris684/catbot
@@ -13,6 +15,9 @@ jobs:
     name: Build and push image then deploy to EKS
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
       - name: Build and push to Docker Hub
         uses: ./.github/workflows/build-and-push.yml
         with:
