@@ -1,0 +1,19 @@
+name: Main branch workflow
+
+on:
+  push:
+    branches: troubleshoot-eks
+  #release:
+  #  types: [published]
+
+env:
+  IMAGE_NAME: samanthamorris684/catbot
+
+jobs:
+  build-and-push-image:
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      IMAGE_TAG: test #$GITHUB_SHA
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      

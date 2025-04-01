@@ -2,7 +2,7 @@ name: Feature branch workflow
 
 on:
   push:
-    branches-ignore: [main]
+    branches-ignore: [troubleshoot-eks]
 
 jobs:
   build-and-push-feature:
