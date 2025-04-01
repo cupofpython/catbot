@@ -2,7 +2,7 @@ name: Build image
 
 on:
   push:
-    branches-ignore: [ $default-branch ]
+    branches-ignore: [ main ]
   #pull_request:
   #  branches: [ $default-branch ]
 
