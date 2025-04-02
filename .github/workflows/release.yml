@@ -27,5 +27,5 @@ jobs:
       
       - name: Deploy to EKS
         run: |
-          kubectl set image deployment/server samanthamorris684/catbot=samanthamorris684/catbot:test
-          kubectl rollout status deployment/server
+          kubectl set image deployment/server server=samanthamorris684/catbot:test -n cat-chatbot
+          kubectl rollout status deployment/server -n cat-chatbot
