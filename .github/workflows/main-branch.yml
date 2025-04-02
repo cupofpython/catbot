@@ -2,9 +2,7 @@ name: Main branch workflow
 
 on:
   push:
-    branches: troubleshoot-eks
-  #release:
-  #  types: [published]
+    branches: main
 
 env:
   IMAGE_NAME: samanthamorris684/catbot
@@ -13,7 +11,12 @@ jobs:
   build-and-push-image:
     uses: ./.github/workflows/build-and-push.yml
     with:
-      IMAGE_TAG: test #$GITHUB_SHA
+      IMAGE_TAG: $GITHUB_SHA
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  deploy-to-eks:
+    uses: ./.github/workflows/deploy-to-eks.yml
+    with:
+      IMAGE_TAG: $GITHUB_SHA
       
