@@ -16,6 +16,7 @@ jobs:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy-to-eks:
+    needs: build-and-push-image
     uses: ./.github/workflows/deploy-to-eks.yml
     with:
       IMAGE_TAG: $GITHUB_SHA
