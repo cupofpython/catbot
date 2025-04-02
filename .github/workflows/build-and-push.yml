@@ -27,8 +27,7 @@ jobs:
         with:
           username: ${{ env.USERNAME }}
           password: ${{ env.PASSWORD }}
-
-      - uses: actions/checkout@v4
+      
       - name: Build and push the Docker image
         run: |
           docker build -t $IMAGE_NAME:${{ inputs.IMAGE_TAG }} .
