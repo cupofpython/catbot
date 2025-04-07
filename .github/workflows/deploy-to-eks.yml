@@ -15,7 +15,8 @@ on:
         type: string
 
 env:
-  IMAGE_NAME: samanthamorris684/catbot
+  REGISTRY: samanthamorris684
+  IMAGE_NAME: catbot
   EKS_CLUSTER_NAME: catbot-cluster
   NAMESPACE: cat-chatbot
 
@@ -36,5 +37,5 @@ jobs:
       
       - name: Deploy to EKS
         run: |
-          kubectl set image deployment/server server=${{ env.IMAGE_NAME }}:${{ inputs.IMAGE_TAG }} -n ${{ env.NAMESPACE }}
+          kubectl set image deployment/server server=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.IMAGE_TAG }} -n ${{ env.NAMESPACE }}
           kubectl rollout status deployment/server -n ${{ env.NAMESPACE }}

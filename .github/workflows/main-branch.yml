@@ -4,9 +4,6 @@ on:
   push:
     branches: main
 
-env:
-  IMAGE_NAME: samanthamorris684/catbot
-
 jobs:
   build-and-push-image:
     uses: ./.github/workflows/build-and-push.yml

@@ -11,7 +11,8 @@ on:
         type: string
 
 env:
-  IMAGE_NAME: samanthamorris684/catbot
+  REGISTRY: samanthamorris684
+  IMAGE_NAME: catbot
   USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
   PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -30,7 +31,7 @@ jobs:
       
       - name: Build and push the Docker image
         run: |
-          docker build -t $IMAGE_NAME:${{ inputs.IMAGE_TAG }} .
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.IMAGE_TAG }} .
           docker push $IMAGE_NAME:${{ inputs.IMAGE_TAG }}
         
         
