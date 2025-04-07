@@ -11,6 +11,7 @@ jobs:
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   scout:
+    needs: build-and-push-image
     uses: ./.github/workflows/scout.yml
     with:
       IMAGE_TAG: pr-${{ github.event.number }}
