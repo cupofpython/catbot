@@ -1,6 +1,9 @@
 name: Security workflow
 on:
   workflow_call:
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
     inputs:
       IMAGE_TAG:
         required: true
