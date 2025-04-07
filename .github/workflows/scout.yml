@@ -12,6 +12,7 @@ on:
 env:
   REGISTRY: samanthamorris684
   IMAGE_NAME: catbot
+  # Change from latest
   COMPARE_TAG: latest
   USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
   PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
