@@ -20,10 +20,9 @@ jobs:
   scout:
     runs-on: ubuntu-latest
     steps:
-      - name: Login to registry
-        uses: docker/login-action@v2.1.0
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3.4.0
         with:
-          registry: ${{ env.REGISTRY }}
           username: ${{ env.USERNAME }}
           password: ${{ env.PASSWORD }}
       

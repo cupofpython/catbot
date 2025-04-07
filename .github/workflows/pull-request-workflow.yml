@@ -4,6 +4,12 @@ on:
   pull_request
 
 jobs:
+  build-and-push-image:
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      IMAGE_TAG: $GITHUB_REF_NAME
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   scout:
     uses: ./.github/workflows/scout.yml
     with:
