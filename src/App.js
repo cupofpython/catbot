@@ -53,8 +53,9 @@ function App() {
       const prompt = `Context: This is a cat named ${catName}. They have the following traits: ${catTraits}. Generate a response as the cat to the following message: ${newUserInput}`;
       
       // Execute command and wait for the result
-      // Switch K8s service name to 0.0.0.0 for local testing!
-      const result = await fetch("http://a4c423481a99842669d9088bba7450ad-1853516926.us-east-2.elb.amazonaws.com:5001/execute", {
+      var host = ("REACT_APP_LOCAL" in process.env) ? process.env.REACT_APP_LOCAL : "a4c423481a99842669d9088bba7450ad-1853516926.us-east-2.elb.amazonaws.com";
+      var port = ("REACT_APP_SERVER_PORT" in process.env) ? process.env.REACT_APP_SERVER_PORT : 5001;
+      const result = await fetch(`http://${host}:${port}/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

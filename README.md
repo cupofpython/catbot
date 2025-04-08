@@ -12,15 +12,13 @@ It is a NodeJS app that uses the llama3.2 model to service prompt requests. It u
 ## How to Run
 
 ### Locally
-- Update the `App.js` and `server.js` to use 0.0.0.0 as hosts for API requests instead of K8s service names.
-- `docker run -p 11434:11434 ollama/ollama:0.6.2`
+- Run an LLM container `docker run -p 11434:11434 --name model ollama/ollama:0.6.2`
 - Exec into the container and run `ollama pull llama3.2`
-- `npm start`
+- `dotenv -e .env.dev -- npm run start:dev`
 
 ### Locally with Docker Compose
 I used compose to develop this locally. 
 
-- Update the `App.js` and `server.js` to use 0.0.0.0 as hosts for API requests instead of K8s service names.
 - `docker compose up --build`
 - When done, `docker compose down`
 

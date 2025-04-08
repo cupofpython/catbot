@@ -3,9 +3,6 @@ const cors = require("cors");        // Import CORS middleware
 const axios = require("axios")
 const app = express(); // Initialize Express
 
-// Use env variable, or fallback to localhost
-// const LLM_API_HOST = process.env.LLM_API_HOST || 'http://0.0.0.0:11434';
-
 app.use(cors());
 app.use(express.json());
 
@@ -26,9 +23,8 @@ app.post("/execute", async (req, res) => {
 });
 
 function getResponse(model, prompt) {
-    //console.log(`${LLM_API_HOST}`)
-    // Use K8s service nae, switch back to 0.0.0.0 for local testing (npm start)
-    return axios.post("http://model-published:11434/api/generate", {
+    var host = ("REACT_APP_MODEL_SERVICE" in process.env) ? process.env.REACT_APP_MODEL_SERVICE : "model-published";
+    return axios.post(`http://${host}:11434/api/generate`, {
         model: model,
         prompt: prompt,
         stream: false
@@ -43,8 +39,8 @@ function getResponse(model, prompt) {
     });
 }
   
-// Start the server and listen on port 5001
-const PORT = 5001;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Start the server and listen on port specified in command line, ex. PORT=5001 node server.js
+var port = ("REACT_APP_SERVER_PORT" in process.env) ? process.env.REACT_APP_SERVER_PORT : 5001;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
