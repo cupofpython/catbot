@@ -13,14 +13,17 @@
     "concurrently": "^9.1.2",
     "cors": "^2.8.5",
     "dockerode": "^4.0.4",
+    "dotenv": "^16.4.7",
     "node-polyfill-webpack-plugin": "^4.1.0",
+    "os": "^0.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"node server.js\" \"react-scripts start\"",
+    "start:prod": "concurrently \"node server.js\" \"react-scripts start\"",
+    "start:dev": "concurrently \"node server.js\" \"react-scripts start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

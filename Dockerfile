@@ -10,10 +10,6 @@ ARG NODE_VERSION=23.10.0
 
 FROM node:${NODE_VERSION}-alpine
 
-# Use production node environment by default.
-ENV NODE_ENV production
-
-
 WORKDIR /usr/src/app
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
@@ -37,5 +33,8 @@ EXPOSE 3000
 # To access server.js
 EXPOSE 5001
 
+# Expose dev port
+EXPOSE 5002
+
 # Run the application.
-CMD npm start
+CMD npm run start:prod
