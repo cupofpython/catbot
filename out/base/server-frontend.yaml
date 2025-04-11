@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-frontend
+  namespace: cat-chatbot
+spec:
+  selector:
+    com.docker.compose.project: cat-chatbot
+    com.docker.compose.service: server
+  ports:
+    - name: http
+      port: 80
+      targetPort: app-3000

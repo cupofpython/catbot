@@ -24,8 +24,8 @@ app.post("/execute", async (req, res) => {
 });
 
 // Streaming endpoint for SSE - supporting both GET and POST
-app.post("/stream", handleStreamRequest);
-app.get("/stream", handleStreamRequest);
+app.post("/api/stream", handleStreamRequest);
+app.get("/api/stream", handleStreamRequest);
 
 // Handler function for stream requests
 async function handleStreamRequest(req, res) {

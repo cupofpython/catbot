@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-backend
+  namespace: cat-chatbot
+spec:
+  selector:
+    com.docker.compose.project: cat-chatbot
+    com.docker.compose.service: server
+  ports:
+    - name: api
+      port: 5001
+      targetPort: server-5001

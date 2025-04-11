@@ -1,9 +1,30 @@
-#! server-service.yaml
-# Generated code, do not edit
-apiVersion: v1
-kind: Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-    name: server-published
-    namespace: cat-chatbot
+  name: catbot-ingress
+  namespace: cat-chatbot
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:550259584844:certificate/043b146e-db7e-4681-a0af-da743eb84723
 spec:
-    type: LoadBalancer
+  ingressClassName: alb
+  rules:
+    - host: thecatbot.ai
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: server-frontend
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: server-backend
+                port:
+                  number: 5001
