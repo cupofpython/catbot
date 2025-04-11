@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 function App() {
@@ -9,6 +9,16 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Ref to store the current message container element
+  const messagesContainerRef = useRef(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   // Handle image upload
   const handleImageChange = (e) => {
@@ -33,7 +43,7 @@ function App() {
     }]);
   };
 
-  // Send message to cat
+  // Send message to cat with streaming response
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!userInput.trim() || isLoading) return; // Prevent multiple submissions
@@ -48,36 +58,121 @@ function App() {
     setUserInput('');
 
     try {
-      // Interact with LLM
+      // Add an empty cat message that will be updated as the stream comes in
+      setMessages(prevMessages => [...prevMessages, { 
+        sender: 'cat', 
+        text: '',
+        isStreaming: true // Mark this message as streaming
+      }]);
+      
+      // Prepare the request data
       const model = `llama3.2`;
       const prompt = `Context: This is a cat named ${catName}. They have the following traits: ${catTraits}. Generate a response as the cat to the following message: ${newUserInput}`;
       
-      // Execute command and wait for the result
-      var host = ("REACT_APP_LOCAL" in process.env) ? process.env.REACT_APP_LOCAL : "a4c423481a99842669d9088bba7450ad-1853516926.us-east-2.elb.amazonaws.com";
+      var host = ("REACT_APP_LOCAL" in process.env) ? process.env.REACT_APP_LOCAL : "localhost";
       var port = ("REACT_APP_SERVER_PORT" in process.env) ? process.env.REACT_APP_SERVER_PORT : 5001;
-      const result = await fetch(`http://${host}:${port}/execute`, {
+      
+      // Use fetch with streaming
+      const response = await fetch(`http://${host}:${port}/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          model,
-          prompt
-        }),
+        body: JSON.stringify({ model, prompt }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Create a reader from the response body stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
       
-      const data = await result.json();
-      const response = data.response || "No response received";
+      let done = false;
+      let accumulatedResponse = '';
       
-      // Add cat response to messages
-      setMessages(prevMessages => [...prevMessages, { sender: 'cat', text: response }]);
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        
+        if (done) break;
+        
+        // Decode and process the chunk
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // SSE data comes in the format "data: {json}\n\n"
+        const lines = chunk.split('\n\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonStr = line.substring(6); // Remove 'data: ' prefix
+              if (jsonStr.trim()) {
+                const data = JSON.parse(jsonStr);
+                
+                if (data.error) {
+                  // Handle error in stream
+                  setMessages(prevMessages => {
+                    const newMessages = [...prevMessages];
+                    const lastIndex = newMessages.length - 1;
+                    newMessages[lastIndex] = {
+                      ...newMessages[lastIndex],
+                      text: "Meow? Something went wrong with my cat brain...",
+                      isStreaming: false
+                    };
+                    return newMessages;
+                  });
+                  done = true;
+                  break;
+                }
+                
+                if (data.response) {
+                  accumulatedResponse += data.response;
+                  
+                  // Update the message being streamed
+                  setMessages(prevMessages => {
+                    const newMessages = [...prevMessages];
+                    const lastIndex = newMessages.length - 1;
+                    newMessages[lastIndex] = {
+                      ...newMessages[lastIndex],
+                      text: accumulatedResponse
+                    };
+                    return newMessages;
+                  });
+                }
+                
+                if (data.done) {
+                  // Mark message as no longer streaming
+                  setMessages(prevMessages => {
+                    const newMessages = [...prevMessages];
+                    const lastIndex = newMessages.length - 1;
+                    newMessages[lastIndex] = {
+                      ...newMessages[lastIndex],
+                      isStreaming: false
+                    };
+                    return newMessages;
+                  });
+                  done = true;
+                  break;
+                }
+              }
+            } catch (e) {
+              console.error("Error parsing SSE data:", e, line);
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error("Error getting cat response:", error);
-      // Show error response
-      setMessages(prevMessages => [...prevMessages, { 
-        sender: 'cat', 
-        text: "Meow? Something went wrong with my cat brain..." 
-      }]);
+      setMessages(prevMessages => {
+        const newMessages = [...prevMessages];
+        const lastIndex = newMessages.length - 1;
+        newMessages[lastIndex] = {
+          ...newMessages[lastIndex],
+          text: "Meow? Something went wrong with my cat brain...",
+          isStreaming: false
+        };
+        return newMessages;
+      });
     } finally {
-      // Always reset loading state
       setIsLoading(false);
     }
   };
@@ -158,13 +253,14 @@ function App() {
               </div>
             </div>
             
-            <div className="messages-container">
+            <div className="messages-container" ref={messagesContainerRef}>
               {messages.map((msg, index) => (
                 <div 
                   key={index} 
                   className={`message ${msg.sender === 'user' ? 'user-message' : 'cat-message'}`}
                 >
                   {msg.text}
+                  {msg.isStreaming && <span className="typing-indicator">•••</span>}
                 </div>
               ))}
             </div>
