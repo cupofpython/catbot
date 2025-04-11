@@ -33,7 +33,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           driver: cloud
-          endpoint: "cloud-demonstrationorg/default"
+          endpoint: "cloud-demonstrationorg-default"
           install: true
       
       - name: Push the Docker image
