@@ -41,7 +41,6 @@ jobs:
         with:
           push: true
           platforms: linux/amd64
-          builder: cloud-demonstrationorg-default
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.IMAGE_TAG }}
         
         
