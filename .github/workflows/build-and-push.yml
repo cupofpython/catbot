@@ -29,10 +29,18 @@ jobs:
           username: ${{ env.USERNAME }}
           password: ${{ env.PASSWORD }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: cloud
+          endpoint: "demonstrationorg/default"
+          install: true
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
+          platforms: linux/amd64
           builder: cloud-demonstrationorg-default
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.IMAGE_TAG }}
         
