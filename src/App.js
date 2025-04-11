@@ -69,7 +69,7 @@ function App() {
       const model = `llama3.2`;
       const prompt = `Context: This is a cat named ${catName}. They have the following traits: ${catTraits}. Generate a response as the cat to the following message: ${newUserInput}`;
       
-      var host = ("REACT_APP_LOCAL" in process.env) ? process.env.REACT_APP_LOCAL : "localhost";
+      var host = ("REACT_APP_LOCAL" in process.env) ? process.env.REACT_APP_LOCAL : "a4c423481a99842669d9088bba7450ad-1853516926.us-east-2.elb.amazonaws.com";
       var port = ("REACT_APP_SERVER_PORT" in process.env) ? process.env.REACT_APP_SERVER_PORT : 5001;
       
       // Use fetch with streaming
