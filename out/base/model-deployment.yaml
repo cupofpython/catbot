@@ -23,6 +23,13 @@ spec:
                 com.docker.compose.service: model
                 com.docker.compose.network.default: "true"
         spec:
+            nodeSelector:
+                model: "true"
+            tolerations:
+                - key: "model"
+                  operator: "Equal"
+                  value: "true"
+                  effect: "NoSchedule"
             containers:
                 - name: ollama
                   image: ollama/ollama:0.6.2
@@ -32,8 +39,11 @@ spec:
                       containerPort: 11434
                   resources:
                     requests:
-                      cpu: "250m"
-                      memory: "1Gi"
+                      cpu: "1000m"
+                      memory: "4Gi"
+                    limits:
+                      cpu: "2000m"
+                      memory: "6Gi"
                   lifecycle:
                     postStart:
                       exec:
