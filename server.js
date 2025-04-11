@@ -51,8 +51,10 @@ async function handleStreamRequest(req, res) {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     
+    let streamTimeout;
+    let timeoutTriggered = false;
     // Setup the timeout for the stream
-    let streamTimeout = setTimeout(() => {
+    streamTimeout = setTimeout(() => {
         console.warn("Stream timeout reached");
         res.write(`data: ${JSON.stringify({ error: "Stream timeout", done: true })}\n\n`);
         res.end();
@@ -91,33 +93,39 @@ async function handleStreamRequest(req, res) {
 
         response.data.on('data', (chunk) => {
             try {
-                // Clear the timeout on each received chunk
-                clearTimeout(streamTimeout);
-                // Reset timeout
-                streamTimeout = setTimeout(() => {
-                    console.warn("Stream timeout between chunks");
-                    res.write(`data: ${JSON.stringify({ error: "Stream timeout between responses", done: true })}\n\n`);
-                    res.end();
-                }, STREAM_TIMEOUT);
+                 // Only process if timeout hasn't fired yet
+                 if (!timeoutTriggered) {
+                  // Clear the timeout on each received chunk
+                  clearTimeout(streamTimeout);
+                  
+                  // Reset timeout
+                  streamTimeout = setTimeout(() => {
+                      if (!timeoutTriggered) {
+                          timeoutTriggered = true;
+                          console.warn("Stream timeout between chunks");
+                          res.write(`data: ${JSON.stringify({ error: "Stream timeout between responses", done: true })}\n\n`);
+                          res.end();
+                      }
+                  }, STREAM_TIMEOUT);
 
-                const data = JSON.parse(chunk.toString());
+                  const data = JSON.parse(chunk.toString());
                 
-                // Track first token time
-                if (data.response && tokensGenerated === 0) {
+                  // Track first token time
+                  if (data.response && tokensGenerated === 0) {
                     firstTokenTime = Date.now();
                     console.log(`First token after ${firstTokenTime - startTime}ms`);
-                }
+                  }
                 
-                // Count tokens
-                if (data.response) {
+                  // Count tokens
+                  if (data.response) {
                     tokensGenerated += 1;
-                }
+                  }
                 
-                // Send each chunk as an SSE event
-                res.write(`data: ${JSON.stringify(data)}\n\n`);
+                  // Send each chunk as an SSE event
+                  res.write(`data: ${JSON.stringify(data)}\n\n`);
                 
-                // If this is the final response, end the connection and log performance
-                if (data.done) {
+                  // If this is the final response, end the connection and log performance
+                  if (data.done) {
                     const endTime = Date.now();
                     const totalTime = endTime - startTime;
                     const tokensPerSecond = tokensGenerated / (totalTime / 1000);
@@ -127,6 +135,7 @@ async function handleStreamRequest(req, res) {
                     // Clean up the timeout
                     clearTimeout(streamTimeout);
                     res.end();
+                  }
                 }
             } catch (err) {
                 console.error("Error parsing chunk:", err);
