@@ -16,6 +16,9 @@ It is a NodeJS app that uses the llama3.2 model to service prompt requests. It u
 - Exec into the container and run `ollama pull llama3.2`
 - `dotenv -e .env.dev -- npm run start:dev`
 
+#### Local Tests
+- Run `npm test`
+
 ### Locally with Docker Compose
 I used compose to develop this locally. 
 

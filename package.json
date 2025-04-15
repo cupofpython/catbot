@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/preset-env": "^7.26.9",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.4",
+    "babel-jest": "^29.7.0",
     "browserify-zlib": "^0.2.0",
     "clean": "^4.0.2",
     "concurrently": "^9.1.2",
@@ -15,17 +17,19 @@
     "dockerode": "^4.0.4",
     "dotenv": "^16.4.7",
     "node-polyfill-webpack-plugin": "^4.1.0",
+    "ollama": "^0.5.14",
     "os": "^0.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",
+    "ts-jest": "^29.3.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start:prod": "concurrently \"node server.js\" \"react-scripts start\"",
     "start:dev": "concurrently \"node server.js\" \"react-scripts start\"",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest --detectOpenHandles --forceExit",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -49,9 +53,11 @@
   "devDependencies": {
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
+    "jest": "^29.0.0",
     "node-libs-browser": "^2.2.1",
     "path-browserify": "^1.0.1",
     "react-app-rewired": "^2.2.1",
-    "stream-browserify": "^3.0.0"
+    "stream-browserify": "^3.0.0",
+    "testcontainers": "^10.24.2"
   }
 }

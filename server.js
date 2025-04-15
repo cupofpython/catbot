@@ -89,7 +89,8 @@ async function handleStreamRequest(req, res) {
 
 function getResponse(model, prompt) {
     var host = ("REACT_APP_MODEL_SERVICE" in process.env) ? process.env.REACT_APP_MODEL_SERVICE : "model-published";
-    return axios.post(`http://${host}:11434/api/generate`, {
+    var modelPort = ("REACT_APP_MODEL_PORT" in process.env) ? process.env.REACT_APP_MODEL_PORT : 11434
+    return axios.post(`http://${host}:${modelPort}/api/generate`, {
         model: model,
         prompt: prompt,
         stream: false
@@ -109,3 +110,8 @@ var port = ("REACT_APP_SERVER_PORT" in process.env) ? process.env.REACT_APP_SERV
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+// Export the necessary functions and app for testing
+module.exports = {
+  getResponse
+};
