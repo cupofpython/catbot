@@ -1,7 +1,7 @@
 # CatBot: Talk to your cats. Access it [here!](https://thecatbot.ai)
 
 
-https://github.com/user-attachments/assets/0124784f-e069-4150-87a3-21c2b76b871d
+[![CatBot Demo](https://img.youtube.com/vi/Dlrrmmmn4M0/0.jpg)](https://www.youtube.com/watch?v=Dlrrmmmn4M0)
 
 
 ## Summary
