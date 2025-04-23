@@ -18,6 +18,10 @@ env:
   EKS_CLUSTER_NAME: catbot-cluster
   NAMESPACE: cat-chatbot
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy-to-eks:
     name: Deploy to EKS
