@@ -8,7 +8,7 @@ describe('Ollama Container Tests', () => {
   // Use beforeAll instead of beforeEach if you want to reuse the container
   beforeAll(async () => {
     // Initialize container before tests run
-    container = await new GenericContainer("ollama/ollama:0.6.2")
+    container = await new GenericContainer("samanthamorris684/ollama@sha256:78a199fa9652a16429037726943a82bd4916975fecf2b105d06e140ae70a1420")
       .withExposedPorts(11434)
       .start();
 
@@ -24,9 +24,6 @@ describe('Ollama Container Tests', () => {
     
     console.log(`Container running at ${process.env.REACT_APP_MODEL_SERVICE}:${process.env.REACT_APP_MODEL_PORT}`);
 
-    // Pull the model
-    await container.exec(["ollama", "pull", "llama3.2"]);
-
     console.log()
 
   }, 180 * SECONDS); // Timeout increased for startup and model pull
@@ -38,7 +35,7 @@ describe('Ollama Container Tests', () => {
             force: true,
             timeout: 0
         });
-        console.log("Container forcefull stopped");
+        console.log("Container forcefully stopped");
     }
     catch (error) {
         console.error("Error stopping container: ", error);

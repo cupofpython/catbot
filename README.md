@@ -12,8 +12,7 @@ It is a NodeJS app that uses the llama3.2 model to service prompt requests. It u
 ## How to Run
 
 ### Locally
-- Run an LLM container `docker run -p 11434:11434 --name model ollama/ollama:0.6.2`
-- Exec into the container and run `ollama pull llama3.2`
+- Run an LLM container `docker run -p 11434:11434 --name model samanthamorris684/ollama@sha256:78a199fa9652a16429037726943a82bd4916975fecf2b105d06e140ae70a1420`
 - `dotenv -e .env.dev -- npm run start:dev`
 
 #### Local Tests
