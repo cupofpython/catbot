@@ -7,7 +7,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:550259584844:certificate/043b146e-db7e-4681-a0af-da743eb84723
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:175142243308:certificate/c5e7fb70-aaec-4319-9d28-7bcbd4bbbf3c
 spec:
   ingressClassName: alb
   rules:

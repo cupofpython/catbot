@@ -52,7 +52,6 @@ describe('Ollama Container Tests', () => {
     const result = await getResponse(model, prompt);
     console.log('Response from Ollama:', result);
     
-    // Add your assertions here
     expect(result["done"]).toBe(true)
   }, 60 * SECONDS);
 });

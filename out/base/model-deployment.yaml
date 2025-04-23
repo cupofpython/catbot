@@ -39,11 +39,11 @@ spec:
                       containerPort: 11434
                   resources:
                     requests:
-                      cpu: "1000m"
-                      memory: "4Gi"
+                      cpu: "6000m"
+                      memory: "28Gi"
                     limits:
-                      cpu: "2000m"
-                      memory: "6Gi"
+                      cpu: "7000m"
+                      memory: "30Gi"
                   lifecycle:
                     postStart:
                       exec:
