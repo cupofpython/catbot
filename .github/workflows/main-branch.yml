@@ -22,5 +22,4 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
     secrets:
       GH_ACTIONS_ROLE: ${{ secrets.GH_ACTIONS_ROLE }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
       

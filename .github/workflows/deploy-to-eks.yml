@@ -5,8 +5,6 @@ on:
     secrets:
       GH_ACTIONS_ROLE:
         required: true
-      AWS_REGION:
-        required: true
     inputs:
       IMAGE_TAG:
         required: true
@@ -17,6 +15,7 @@ env:
   IMAGE_NAME: catbot
   EKS_CLUSTER_NAME: catbot-cluster
   NAMESPACE: cat-chatbot
+  AWS_REGION: us-east-1
 
 permissions:
   id-token: write
@@ -34,7 +33,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       
       - name: Update kube config
-        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
       
       - name: Deploy to EKS
         run: |
