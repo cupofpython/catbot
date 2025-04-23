@@ -20,9 +20,9 @@ RUN npm install
 
 COPY server.js .
 
-COPY src/ .
+COPY src/ ./src
 
-COPY public/ .
+COPY public/ ./public
 
 # Expose the port that the application listens on.
 EXPOSE 3000
