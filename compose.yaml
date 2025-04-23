@@ -17,7 +17,7 @@ services:
       context: .
     volumes:
       - ./:/usr/src/app
-      - /usr/src/app/node_modules
+      #- /usr/src/app/node_modules
     env_file:
       - .env.compose
     ports:
@@ -25,8 +25,7 @@ services:
       - 5002:5002
   model:
     container_name: model
-    image: ollama/ollama:0.6.2
+    build:
+      context: ./ollama
     ports:
       - 11434:11434
-    post_start:
-      - command: ollama pull llama3.2

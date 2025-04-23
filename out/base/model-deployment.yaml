@@ -32,7 +32,7 @@ spec:
                   effect: "NoSchedule"
             containers:
                 - name: ollama
-                  image: ollama/ollama:0.6.2
+                  image: samanthamorris684/ollama:latest
                   imagePullPolicy: IfNotPresent
                   ports:
                     - name: model-11434
@@ -44,7 +44,4 @@ spec:
                     limits:
                       cpu: "7000m"
                       memory: "30Gi"
-                  lifecycle:
-                    postStart:
-                      exec:
-                        command: ["/bin/sh", "-c", "ollama pull llama3.2"]
+
