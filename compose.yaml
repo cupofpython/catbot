@@ -17,7 +17,6 @@ services:
       context: .
     volumes:
       - ./:/usr/src/app
-      #- /usr/src/app/node_modules
     env_file:
       - .env.compose
     ports:
