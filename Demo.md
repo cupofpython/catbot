@@ -16,7 +16,7 @@ Knowing this, let's start developing.
 ## Running in my dev environment
 ### Containers, TestContainers, TCC 🐳
 - Navigate back to project on VS Code
-- Start model container as instructed in README
+- Start model container as instructed in README: `docker run -p 11434:11434 --name model samanthamorris684/ollama@sha256:78a199fa9652a16429037726943a82bd4916975fecf2b105d06e140ae70a1420`
 - Run app locally using: `dotenv -e .env.dev -- npm run start:dev`
 - Split view between VSCode and Chrome
 - Navigate to localhost:3000 on Chrome
@@ -34,7 +34,7 @@ Knowing this, let's start developing.
 ### Topics: Build, Build Cloud, and Scout 🐳
 - Let's try to build this locally: `docker build -t samanthamorris684/catbot:nobc . --platform="linux/amd64"`
 - *Note: This will only leverage local caching!*
-- We can also use build cloud remote bulder: `docker buildx build --builder cloud-demonstrationorg-default -t samanthamorris684/catbot:bc . --platform ="linux/amd64"`
+- We can also use build cloud remote bulder: `docker buildx build --builder cloud-demonstrationorg-default -t samanthamorris684/catbot:bc . --platform="linux/amd64"`
 - Subsequent builds of this image will use the shared build cache on different machines, making builds faster! [Take a look.](https://app.docker.com/build/accounts/demonstrationorg/builds)
 - *Note: We will also make use of build cloud in the CI pipeline.*
 - Navigate to Docker Desktop and search for image build
@@ -57,9 +57,11 @@ Knowing this, let's start developing.
 - Let's make a quick PR.
 - Edit line 213 of App.js to a different cat name
 - Quick preview of a frontend change by running `dotenv -e .env.dev -- npm run start:dev`
-- `git branch -b new-cat`
+- `git checkout -b new-cat`
 - `git add src/App.js` && `git commit -m "Change cat name"`
 - `git push`
+
+(Cleanup: `git branch -D new-cat`, delete branch in GH and close PR)
 
 - Navigate to GitHub and open a PR then see the pipeline for building, testing, and scanning
 
