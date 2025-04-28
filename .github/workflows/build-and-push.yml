@@ -1,4 +1,4 @@
-name: Build and deploy image
+name: Build and deploy images
 
 on:
   workflow_call:
@@ -12,7 +12,8 @@ on:
 
 env:
   REGISTRY: samanthamorris684
-  IMAGE_NAME: catbot
+  FRONTEND_IMAGE_NAME: catbot-frontend
+  BACKEND_IMAGE_NAME: catbot-backend
   USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
   PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -36,12 +37,19 @@ jobs:
           endpoint: "demonstrationorg/default"
           install: true
 
-      - name: Build and push
+      - name: Build and push frontend
         uses: docker/build-push-action@v6
         with:
           push: true
           platforms: linux/amd64
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.IMAGE_TAG }}
+          tags: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ inputs.IMAGE_TAG }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          platforms: linux/amd64
+          tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ inputs.IMAGE_TAG }}
         
         
     

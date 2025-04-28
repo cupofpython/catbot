@@ -1,0 +1,36 @@
+# syntax=docker/dockerfile:1
+
+# Build Stage
+ARG NODE_VERSION=23.10.0
+FROM node:${NODE_VERSION}-alpine AS builder
+
+WORKDIR /usr/src/app
+
+# Copy package files first (cache layer)
+COPY package.json package-lock.json ./
+
+# Install all dependencies
+RUN npm ci
+
+# Copy source files
+COPY src/ ./src
+COPY public/ ./public
+
+# Runtime Stage
+FROM node:${NODE_VERSION}-alpine
+
+WORKDIR /usr/src/app
+
+# Copy node_modules from builder
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Copy app source
+COPY src/ ./src
+COPY public/ ./public
+COPY package.json package-lock.json ./
+
+# Expose the port that the app listens on
+EXPOSE 3000
+
+# Run the application
+CMD ["npm", "start"]

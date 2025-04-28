@@ -26,8 +26,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start:prod": "concurrently \"node server.js\" \"react-scripts start\"",
-    "start:dev": "concurrently \"node server.js\" \"react-scripts start\"",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --detectOpenHandles --forceExit",
     "eject": "react-scripts eject"
