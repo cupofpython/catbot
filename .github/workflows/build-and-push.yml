@@ -41,6 +41,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
+          file: Dockerfile.frontend
           platforms: linux/amd64
           tags: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ inputs.IMAGE_TAG }}
 
@@ -48,6 +49,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
+          file: Dockerfile.backend
           platforms: linux/amd64
           tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ inputs.IMAGE_TAG }}
         
