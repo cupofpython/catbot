@@ -8,19 +8,31 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
-    container_name: server
-    command: npm run start:dev
+  frontend:
+    container_name: frontend
     depends_on:
-      - model
+      - backend
     build:
       context: .
+      dockerfile: Dockerfile.frontend
     volumes:
       - ./:/usr/src/app
     env_file:
       - .env.compose
     ports:
       - 3000:3000
+  backend:
+    container_name: backend
+    depends_on:
+      - model
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    volumes:
+      - ./:/usr/src/app
+    env_file:
+      - .env.compose
+    ports:
       - 5002:5002
   model:
     container_name: model

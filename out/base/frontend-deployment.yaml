@@ -1,0 +1,41 @@
+#! server-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend
+    namespace: cat-chatbot
+    labels:
+        com.docker.compose.project: cat-chatbot
+        com.docker.compose.service: frontend-service
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            com.docker.compose.project: cat-chatbot
+            com.docker.compose.service: frontend-service
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: cat-chatbot
+                com.docker.compose.service: frontend-service
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: frontend
+                  image: samanthamorris684/catbot-frontend:latest
+                  imagePullPolicy: Always
+                  env:
+                    - name: NODE_ENV
+                      value: "production"
+                  ports:
+                    - name: app-3000
+                      containerPort: 3000
+                  resources:
+                    requests:
+                      cpu: "250m"
+                      memory: "1Gi"
+            imagePullSecrets:
+              - name: regcred

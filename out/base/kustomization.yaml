@@ -8,6 +8,7 @@ resources:
     - model-deployment.yaml
     - model-expose.yaml
     - model-service.yaml
-    - server-deployment.yaml
-    - server-expose.yaml
-    - server-service.yaml
+    - frontend-deployment.yaml
+    - frontend-service.yaml
+    - backend-deployment.yaml
+    - backend-service.yaml

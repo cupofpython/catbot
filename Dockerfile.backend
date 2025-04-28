@@ -1,0 +1,31 @@
+# syntax=docker/dockerfile:1
+
+# Build stage
+ARG NODE_VERSION=23.10.0
+FROM node:${NODE_VERSION}-alpine AS builder
+
+WORKDIR /usr/src/app
+
+COPY package.json package-lock.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
+
+# Copy app code
+COPY server.js ./
+
+# Runtime stage: new clean container
+FROM node:${NODE_VERSION}-alpine
+
+WORKDIR /usr/src/app
+
+# Copy production node_modules and server.js
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/server.js ./server.js
+
+# Expose backend ports
+EXPOSE 5001
+EXPOSE 5002
+
+# Start the backend
+CMD ["node", "server.js"]

@@ -6,4 +6,4 @@ resources:
     - ../../base
 patches:
     - path: model-service.yaml
-    - path: server-service.yaml
+    #- path: catbot-ingress.yaml

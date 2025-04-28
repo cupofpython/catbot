@@ -12,7 +12,8 @@ on:
 
 env:
   REGISTRY: samanthamorris684
-  IMAGE_NAME: catbot
+  FRONTEND_IMAGE_NAME: catbot-frontend
+  BACKEND_IMAGE_NAME: catbot-backend
   EKS_CLUSTER_NAME: catbot-cluster
   NAMESPACE: cat-chatbot
   AWS_REGION: us-east-1
@@ -35,5 +36,7 @@ jobs:
       - name: Deploy to EKS
         run: |
           aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
-          kubectl set image deployment/server server=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.IMAGE_TAG }} -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/server -n ${{ env.NAMESPACE }}
+          kubectl set image deployment/frontend frontend=${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ inputs.IMAGE_TAG }} -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/frontend -n ${{ env.NAMESPACE }}
+          kubectl set image deployment/backend backend=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ inputs.IMAGE_TAG }} -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/backend -n ${{ env.NAMESPACE }}
