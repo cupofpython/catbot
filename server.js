@@ -44,9 +44,6 @@ async function handleStreamRequest(req, res) {
 
     try {
         const host = ("REACT_APP_MODEL_SERVICE" in process.env) ? process.env.REACT_APP_MODEL_SERVICE : "model-published";
-        const port = ("REACT_APP_MODEL_PORT" in process.env) ? process.env.REACT_APP_MODEL_PORT : 11434;
-        const path = ("REACT_APP_MODEL_PATH" in process.env) ? process.env.REACT_APP_MODEL_PATH : "/api/generate";
-
         const isDMR = "DMR" in process.env ? true : false;
 
         // Add debug logging
@@ -56,11 +53,11 @@ async function handleStreamRequest(req, res) {
         
         if (isDMR) {
             // Docker Model Runner (OpenAI format)
-            console.log(`DMR endpoint: http://${host}:${port}${path}`);
+            console.log(`DMR endpoint: http://${host}/engines/llama.cpp/v1/chat/completions`);
             console.log(`Model: ${model}`)
             response = await axios({
                 method: 'post',
-                url: `http://${host}:${port}${path}`,
+                url: `http://${host}/engines/llama.cpp/v1/chat/completions`,
                 data: {
                     model: 'ai/' + model,
                     messages: [{ role: "user", content: prompt }],
@@ -93,14 +90,12 @@ async function handleStreamRequest(req, res) {
         response.data.on('data', (chunk) => {
             try {
                 const chunkStr = chunk.toString();
-                console.log("Received chunk:", chunkStr.substring(0, 50) + (chunkStr.length > 50 ? '...' : ''));
-                
+
                 // Handle DMR (OpenAI) format - may contain multiple SSE events
                 if (isDMR) {
                     // Split by double newlines to handle multiple SSE events in one chunk
                     const events = chunkStr.split('\n\n').filter(event => event.trim());
-                    console.log(`Found ${events.length} events in chunk`);
-                    
+
                     for (const event of events) {
                         if (event.startsWith('data: ')) {
                             const dataContent = event.replace('data: ', '');
@@ -114,9 +109,6 @@ async function handleStreamRequest(req, res) {
                             
                             try {
                                 const data = JSON.parse(dataContent);
-                                
-                                // Debug the received data structure
-                                console.log("Parsed DMR data:", JSON.stringify(data).substring(0, 100));
                                 
                                 // Extract content based on what's available
                                 let content = '';
@@ -138,7 +130,6 @@ async function handleStreamRequest(req, res) {
                                 };
                                 
                                 if (content) {
-                                    console.log(`Sending content: ${content.substring(0, 20)}${content.length > 20 ? '...' : ''}`);
                                     // Send to client
                                     res.write(`data: ${JSON.stringify(responseData)}\n\n`);
                                 }

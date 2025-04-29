@@ -10,53 +10,50 @@ This demonstration will walk through this project to showcase Docker's build, te
 - Select the stars on the top left to "Ask Gordon"
 - Select Explain my Dockerfile -> Give access to CatBot directory
 - See the various descriptions of lines in the Dockerfile
-
-Knowing this, let's start developing.
+- Let's run this and see it in action.
 
 ## Running in my dev environment
-### Containers, TestContainers, TCC 🐳
+### Topics: Docker Model Runner, Containers, Docker Compose 🐳
 - Navigate back to project on VS Code
-- Start model container as instructed in README: `docker run -p 11434:11434 --name model samanthamorris684/ollama@sha256:78a199fa9652a16429037726943a82bd4916975fecf2b105d06e140ae70a1420`
-- Run app locally using: `dotenv -e .env.dev -- npm run start:dev`
 - Split view between VSCode and Chrome
+- Run `docker compose up --build`
+- Build the images and run them
 - Navigate to localhost:3000 on Chrome
-- *Note: We are only running the LLM container*
 - Test it out!
-- *What if I wanted to test this locally?*
+- *How did this work?*
+- Move into Docker Compose `compose.yaml`
+- See we automatically spun up a frontend and a backend service
+- *How did the cat talk to us?*
+- *Easy: We are using Docker Model Runner to run a model locally.*
+- Review logs where we connect to `http://model-runner.docker.internal/engines/llama.cpp/v1/chat/completions`
+- Navigate to `server.js`
+- *Note that we are interacting with the model through an OpenAI endpoint (chat/completions) from within the backend container*
+- Take down services with `docker compose down`
+- *How can we learn more about models?*
+- In a separate terminal, run `docker model ls`
+- See you can run a model using `docker model run ai/llama3.2`
+- Exit with `/bye`
+- :red_circle: NAVIGATE BACK TO SLIDES
+
+
+## Let's scan what we built our image and test our code!
+### Topics: Scout, TCC 🐳
+- Navigate to Docker Desktop and search for image build from compose
+- Run analysis for vulnerabilities with Docker Scout
+- Navigate back to VS Code
 - Split VS Code and Docker Desktop
 - Navigate to tests/server.test.js and show TestContainers logic
 - Run `npm test` and watch test run, containers appear in DD
 - Switch to TestContainers cloud and re-run `npm test`, notice the containers do not appear in DD
 - View results in [TCC dashboard](https://app.testcontainers.cloud/accounts/9926/dashboard)
-
-
-## Let's build and scan our image!
-### Topics: Build, Build Cloud, and Scout 🐳
-- Let's try to build this locally: `docker build -t samanthamorris684/catbot:nobc . --platform="linux/amd64"`
-- *Note: This will only leverage local caching!*
-- We can also use build cloud remote bulder: `docker buildx build --builder cloud-demonstrationorg-default -t samanthamorris684/catbot:bc . --platform="linux/amd64"`
-- Subsequent builds of this image will use the shared build cache on different machines, making builds faster! [Take a look.](https://app.docker.com/build/accounts/demonstrationorg/builds)
-- *Note: We will also make use of build cloud in the CI pipeline.*
-- Navigate to Docker Desktop and search for image build
-- Run analysis for vulnerabilities with Docker Scout
-
-## How can we start up and tear down all these services together, and use containers for all?
-
-### Topics: Docker Compose 🐳
-
-- Navigate to the compose.yaml file
-- Two different containers/services, port mapping to access entry of app on port 3000
-- *Note: These containers will be able to talk to each other via their exposed ports*
-- Run `docker compose up --build`
-- Navigate to localhost:3000
-- When done, run `docker compose down`
+- :red_circle: NAVIGATE BACK TO SLIDES
 
 ## Bonus: How can we automate this?
 
 - You can use a pipeline to automate this process, in this case we use GitHub Actions
 - Let's make a quick PR.
 - Edit line 213 of App.js to a different cat name
-- Quick preview of a frontend change by running `dotenv -e .env.dev -- npm run start:dev`
+- Quick preview of change by running `docker compose up --build`
 - `git checkout -b new-cat`
 - `git add src/App.js` && `git commit -m "Change cat name"`
 - `git push`
@@ -65,6 +62,8 @@ Knowing this, let's start developing.
 
 - Navigate to GitHub and open a PR then see the pipeline for building, testing, and scanning
 
+- See we built our images with a cloud builder, navigate to [cloud builds](https://app.docker.com/build/accounts/demonstrationorg/builds) to see.
+
 - *Note: On merge, we kick off the deployment to prod, but we won't show that here!*
 
-- Navigate back to diagram slide to close out.
+- :red_circle: NAVIGATE BACK TO SLIDES
