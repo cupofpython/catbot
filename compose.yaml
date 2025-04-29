@@ -23,8 +23,6 @@ services:
       - 3000:3000
   backend:
     container_name: backend
-    depends_on:
-      - model
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -34,9 +32,3 @@ services:
       - .env.compose
     ports:
       - 5002:5002
-  model:
-    container_name: model
-    build:
-      context: ./ollama
-    ports:
-      - 11434:11434

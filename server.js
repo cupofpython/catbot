@@ -44,45 +44,169 @@ async function handleStreamRequest(req, res) {
 
     try {
         const host = ("REACT_APP_MODEL_SERVICE" in process.env) ? process.env.REACT_APP_MODEL_SERVICE : "model-published";
-        
-        // Make a streaming request to Ollama
-        const response = await axios({
-            method: 'post',
-            url: `http://${host}:11434/api/generate`,
-            data: {
-                model: model,
-                prompt: prompt,
-                stream: true
-            },
-            responseType: 'stream'
-        });
+        const port = ("REACT_APP_MODEL_PORT" in process.env) ? process.env.REACT_APP_MODEL_PORT : 11434;
+        const path = ("REACT_APP_MODEL_PATH" in process.env) ? process.env.REACT_APP_MODEL_PATH : "/api/generate";
 
+        const isDMR = "DMR" in process.env ? true : false;
+
+        // Add debug logging
+        console.log(`Making request to ${isDMR ? 'DMR' : 'Ollama'} model service at host: ${host}`);
+        
+        let response;
+        
+        if (isDMR) {
+            // Docker Model Runner (OpenAI format)
+            console.log(`DMR endpoint: http://${host}:${port}${path}`);
+            console.log(`Model: ${model}`)
+            response = await axios({
+                method: 'post',
+                url: `http://${host}:${port}${path}`,
+                data: {
+                    model: 'ai/' + model,
+                    messages: [{ role: "user", content: prompt }],
+                    stream: true
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'text/event-stream'
+                },
+                responseType: 'stream'
+            });
+        } else {
+            // Ollama format
+            console.log(`Ollama endpoint: http://${host}:11434/api/generate`);
+            response = await axios({
+                method: 'post',
+                url: `http://${host}:11434/api/generate`,
+                data: {
+                    model: model,
+                    prompt: prompt,
+                    stream: true
+                },
+                responseType: 'stream'
+            });
+        }
+        
+        console.log("Connection established, processing stream...");
+        
         // Forward the stream to the client
         response.data.on('data', (chunk) => {
             try {
-                const data = JSON.parse(chunk.toString());
-                // Send each chunk as an SSE event
-                res.write(`data: ${JSON.stringify(data)}\n\n`);
+                const chunkStr = chunk.toString();
+                console.log("Received chunk:", chunkStr.substring(0, 50) + (chunkStr.length > 50 ? '...' : ''));
                 
-                // If this is the final response, end the connection
-                if (data.done) {
-                    res.end();
+                // Handle DMR (OpenAI) format - may contain multiple SSE events
+                if (isDMR) {
+                    // Split by double newlines to handle multiple SSE events in one chunk
+                    const events = chunkStr.split('\n\n').filter(event => event.trim());
+                    console.log(`Found ${events.length} events in chunk`);
+                    
+                    for (const event of events) {
+                        if (event.startsWith('data: ')) {
+                            const dataContent = event.replace('data: ', '');
+                            
+                            // Check for "[DONE]" signal
+                            if (dataContent.trim() === '[DONE]') {
+                                console.log("Received [DONE] signal");
+                                res.end();
+                                return;
+                            }
+                            
+                            try {
+                                const data = JSON.parse(dataContent);
+                                
+                                // Debug the received data structure
+                                console.log("Parsed DMR data:", JSON.stringify(data).substring(0, 100));
+                                
+                                // Extract content based on what's available
+                                let content = '';
+                                if (data.choices && data.choices.length > 0) {
+                                    // For chat completions delta format
+                                    if (data.choices[0].delta && data.choices[0].delta.content) {
+                                        content = data.choices[0].delta.content;
+                                    }
+                                    // For text completions format
+                                    else if (data.choices[0].text) {
+                                        content = data.choices[0].text;
+                                    }
+                                }
+                                
+                                // Format to match Ollama response structure that the client expects
+                                const responseData = {
+                                    response: content,  // Use 'response' field to match Ollama format
+                                    done: false
+                                };
+                                
+                                if (content) {
+                                    console.log(`Sending content: ${content.substring(0, 20)}${content.length > 20 ? '...' : ''}`);
+                                    // Send to client
+                                    res.write(`data: ${JSON.stringify(responseData)}\n\n`);
+                                }
+                                
+                                // Check if it's the final chunk
+                                if (data.choices && data.choices[0] && data.choices[0].finish_reason === 'stop') {
+                                    console.log("Detected finish_reason=stop, ending stream");
+                                    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+                                    res.end();
+                                }
+                            } catch (err) {
+                                console.error("Error parsing DMR chunk:", err, "Raw data:", dataContent);
+                                // Don't end the connection on parse error, just log it
+                            }
+                        }
+                    }
+                } 
+                // Handle Ollama format
+                else {
+                    try {
+                        const data = JSON.parse(chunkStr);
+                        console.log(`Ollama response: ${data.response ? data.response.substring(0, 20) + '...' : '[no response field]'}, done=${data.done}`);
+                        
+                        // Send each chunk as an SSE event
+                        res.write(`data: ${JSON.stringify(data)}\n\n`);
+                        
+                        // If this is the final response, end the connection
+                        if (data.done) {
+                            console.log("Ollama stream complete");
+                            res.end();
+                        }
+                    } catch (err) {
+                        console.error("Error parsing Ollama chunk:", err);
+                        // Try to continue processing even if one chunk fails
+                    }
                 }
             } catch (err) {
-                console.error("Error parsing chunk:", err);
-                res.write(`data: ${JSON.stringify({ error: "Parse error" })}\n\n`);
+                console.error("Error processing chunk:", err);
+                res.write(`data: ${JSON.stringify({ error: "Parse error", message: err.message })}\n\n`);
+                // Don't end the stream on parse error unless it's critical
             }
         });
-
+        
         // Handle errors in the stream
         response.data.on('error', (err) => {
             console.error("Stream error:", err);
-            res.write(`data: ${JSON.stringify({ error: "Stream error" })}\n\n`);
+            res.write(`data: ${JSON.stringify({ error: "Stream error", message: err.message, stack: err.stack })}\n\n`);
             res.end();
         });
+        
+        // Make sure we handle the end of the stream properly
+        response.data.on('end', () => {
+            console.log("Stream ended naturally");
+            // Only end the response if it hasn't been ended already
+            if (!res.writableEnded) {
+                res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+                res.end();
+            }
+        });
     } catch (err) {
-        console.error("Streaming error: ", err);
-        res.write(`data: ${JSON.stringify({ error: "Server error", message: err.message })}\n\n`);
+        console.error("Connection error: ", err.message, err.stack);
+        res.write(`data: ${JSON.stringify({ 
+            error: "Server error", 
+            message: err.message,
+            url: err.config?.url || 'unknown',
+            status: err.response?.status || 'unknown',
+            statusText: err.response?.statusText || 'unknown'
+        })}\n\n`);
         res.end();
     }
 }

@@ -1,54 +1,48 @@
 const { GenericContainer } = require('testcontainers');
-const { getResponse } = require('../server');
-const SECONDS = 1000;
+const axios = require('axios');
 
-describe('Ollama Container Tests', () => {
+jest.setTimeout(60000);
+
+describe("Server Endpoints", () => {
   let container;
+  let serverUrl;
 
-  // Use beforeAll instead of beforeEach if you want to reuse the container
   beforeAll(async () => {
-    // Initialize container before tests run
-    container = await new GenericContainer("samanthamorris684/ollama@sha256:78a199fa9652a16429037726943a82bd4916975fecf2b105d06e140ae70a1420")
-      .withExposedPorts(11434)
+    // Start your container
+    container = await new GenericContainer("samanthamorris684/catbot-backend@sha256:6e2bf0ca7fa13fee68e5aa5a85f3c179c5c44bf3a50e3c271c04d64f7cd9e063")
+      .withExposedPorts(5001) // Your server inside listens on 5001
       .start();
 
-    // Get logs
-    (await container.logs())
-        .on("data", line => console.log(line))
-        .on("err", line => console.error(line))
-        .on("end", () => console.log("Stream closed"));
-    
-    // Set environment variables after container is started
-    process.env.REACT_APP_MODEL_SERVICE = container.getHost();
-    process.env.REACT_APP_MODEL_PORT = container.getMappedPort(11434);
-    
-    console.log(`Container running at ${process.env.REACT_APP_MODEL_SERVICE}:${process.env.REACT_APP_MODEL_PORT}`);
-
-    console.log()
-
-  }, 180 * SECONDS); // Timeout increased for startup and model pull
-
-  afterAll(async () => {
-    // Clean up container after tests
-    try {
-        await container.stop({
-            force: true,
-            timeout: 0
-        });
-        console.log("Container forcefully stopped");
-    }
-    catch (error) {
-        console.error("Error stopping container: ", error);
-    }
+    const host = container.getHost();
+    const port = container.getMappedPort(5001);
+    serverUrl = `http://${host}:${port}`;
   });
 
-  test('test nonstreaming response', async () => {
-    const model = "llama3.2";
-    const prompt = "How are you?";
-    
-    const result = await getResponse(model, prompt);
-    console.log('Response from Ollama:', result);
-    
-    expect(result["done"]).toBe(true)
-  }, 60 * SECONDS);
+  afterAll(async () => {
+    await container.stop();
+  });
+
+  test("POST /execute should return 400 if missing model or prompt", async () => {
+    const response = await axios.post(`${serverUrl}/execute`, { model: "test-model" }, { validateStatus: () => true });
+    expect(response.status).toBe(400);
+    expect(response.data).toEqual({ error: "Model name and prompt are required" });
+  });
+
+  test("POST /execute should return 500 if backend model is unreachable", async () => {
+    const response = await axios.post(`${serverUrl}/execute`, { model: "nonexistent", prompt: "hello" }, { validateStatus: () => true });
+    expect(response.status).toBe(500);
+    expect(response.data.error).toBeDefined();
+  });
+
+  test("POST /api/stream should return 400 if missing model or prompt", async () => {
+    const response = await axios.post(`${serverUrl}/api/stream`, { model: "test-model" }, { validateStatus: () => true });
+    expect(response.status).toBe(400);
+    expect(response.data).toEqual({ error: "Model name and prompt are required" });
+  });
+
+  test("GET /api/stream should return 400 if missing model or prompt", async () => {
+    const response = await axios.get(`${serverUrl}/api/stream?model=test-model`, { validateStatus: () => true });
+    expect(response.status).toBe(400);
+    expect(response.data).toEqual({ error: "Model name and prompt are required" });
+  });
 });

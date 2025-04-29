@@ -21,6 +21,8 @@ It is a NodeJS app that uses the llama3.2 model to service prompt requests. It u
 ### Locally with Docker Compose
 I used compose to develop this locally. 
 
+- Install model on Docker Model Runner: `docker model pull ai/llama3.2`
+- Note: This uses the `DMR` flag in the `env.compose` file to interact with the Open AI API call and llama.cpp server
 - `docker compose up --build`
 - When done, `docker compose down`
 
