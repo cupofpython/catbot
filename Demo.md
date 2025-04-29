@@ -6,15 +6,15 @@ This demonstration will walk through this project to showcase Docker's build, te
 
 ## Getting familiarized with AI
 ### Topics: Ask Gordon, Dockerfiles 🐳
-- Open Docker Desktop
-- Select the stars on the top left to "Ask Gordon"
-- Select Explain my Dockerfile -> Give access to CatBot directory
-- See the various descriptions of lines in the Dockerfile
-- Let's run this and see it in action.
+- Open VS Code
+- Note that there are two Dockerfiles, `Dockerfile.backend` and `Dockerfile.frontend`
+- To get up to speed, I will use Docker AI
+- In terminal, type `docker ai explain the file Dockerfile.frontend in this directory`
+- In terminal, type `docker ai explain the file Dockerfile.backend in this directory`
+- Now that I know more, let me run my application as it is today
 
 ## Running in my dev environment
 ### Topics: Docker Model Runner, Containers, Docker Compose 🐳
-- Navigate back to project on VS Code
 - Split view between VSCode and Chrome
 - Run `docker compose up --build`
 - Build the images and run them
@@ -25,6 +25,7 @@ This demonstration will walk through this project to showcase Docker's build, te
 - See we automatically spun up a frontend and a backend service
 - *How did the cat talk to us?*
 - *Easy: We are using Docker Model Runner to run a model locally.*
+
 - Review logs where we connect to `http://model-runner.docker.internal/engines/llama.cpp/v1/chat/completions`
 - Navigate to `server.js`
 - *Note that we are interacting with the model through an OpenAI endpoint (chat/completions) from within the backend container*
@@ -44,8 +45,6 @@ This demonstration will walk through this project to showcase Docker's build, te
 - Split VS Code and Docker Desktop
 - Navigate to tests/server.test.js and show TestContainers logic
 - Run `npm test` and watch test run, containers appear in DD
-- Switch to TestContainers cloud and re-run `npm test`, notice the containers do not appear in DD
-- View results in [TCC dashboard](https://app.testcontainers.cloud/accounts/9926/dashboard)
 - :red_circle: NAVIGATE BACK TO SLIDES
 
 ## Bonus: How can we automate this?
@@ -63,6 +62,8 @@ This demonstration will walk through this project to showcase Docker's build, te
 - Navigate to GitHub and open a PR then see the pipeline for building, testing, and scanning
 
 - See we built our images with a cloud builder, navigate to [cloud builds](https://app.docker.com/build/accounts/demonstrationorg/builds) to see.
+
+- Ran our tests with TestContainers Cloud, navigate to [TCC dashboard](https://app.testcontainers.cloud/accounts/9926/dashboard)
 
 - *Note: On merge, we kick off the deployment to prod, but we won't show that here!*
 
