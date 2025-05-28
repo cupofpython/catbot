@@ -210,7 +210,7 @@ function App() {
                   type="text"
                   value={catName}
                   onChange={(e) => setCatName(e.target.value)}
-                  placeholder="e.g., Bug"
+                  placeholder="e.g., Pebble"
                   required
                 />
               </div>
